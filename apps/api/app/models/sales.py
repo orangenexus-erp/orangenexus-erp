@@ -5,7 +5,7 @@ from uuid import UUID
 
 from sqlalchemy import Boolean, Date, ForeignKey, Integer, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import AuditMixin, Base, TenantMixin, UUIDPrimaryKeyMixin
 
@@ -65,6 +65,12 @@ class SalesDocument(UUIDPrimaryKeyMixin, TenantMixin, AuditMixin, Base):
     journal_entry_id: Mapped[Optional[UUID]] = mapped_column(PGUUID(as_uuid=True), ForeignKey("journal_entries.id"))
     notes: Mapped[Optional[str]] = mapped_column(Text)
 
+    items: Mapped[list["SalesDocumentItem"]] = relationship(
+        "SalesDocumentItem",
+        back_populates="sales_document",
+        cascade="all, delete-orphan",
+    )
+
 
 class SalesDocumentItem(UUIDPrimaryKeyMixin, Base):
     __tablename__ = "sales_document_items"
@@ -83,3 +89,5 @@ class SalesDocumentItem(UUIDPrimaryKeyMixin, Base):
     tax_amount_ves: Mapped[Decimal] = mapped_column(Numeric(18, 2), default=0)
     total_usd: Mapped[Decimal] = mapped_column(Numeric(18, 2), default=0)
     total_ves: Mapped[Decimal] = mapped_column(Numeric(18, 2), default=0)
+
+    sales_document: Mapped[SalesDocument] = relationship("SalesDocument", back_populates="items")

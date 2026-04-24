@@ -1,5 +1,6 @@
 from datetime import date
 from decimal import Decimal
+from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
@@ -46,6 +47,23 @@ class SalesDocumentCreate(BaseModel):
     total_ves: Decimal = Decimal("0")
 
 
+class SalesDocumentUpdate(BaseModel):
+    branch_id: Optional[UUID] = None
+    customer_id: Optional[UUID] = None
+    document_type: Optional[str] = None
+    document_number: Optional[str] = None
+    issue_date: Optional[date] = None
+    currency: Optional[str] = None
+    subtotal_usd: Optional[Decimal] = None
+    subtotal_ves: Optional[Decimal] = None
+    tax_amount_usd: Optional[Decimal] = None
+    tax_amount_ves: Optional[Decimal] = None
+    igtf_amount_usd: Optional[Decimal] = None
+    igtf_amount_ves: Optional[Decimal] = None
+    total_usd: Optional[Decimal] = None
+    total_ves: Optional[Decimal] = None
+
+
 class SalesDocumentRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: UUID
@@ -53,3 +71,7 @@ class SalesDocumentRead(BaseModel):
     status: str
     total_usd: Decimal
     total_ves: Decimal
+
+
+class SalesDocumentResponse(SalesDocumentRead):
+    """Response schema for sales document mutating operations."""
